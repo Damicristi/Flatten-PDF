@@ -56,7 +56,7 @@ do
 		pdf2ps ${var// /_}_renamed.pdf - | ps2pdf - ${var// /_}_Flattened.pdf
 		end=`date +%s`
 
-		echo "Time taken to finish flattening:" $((end-start)) "seconds."
+		echo "Time taken to finish flattening:" $(date -ud "@$((end-start))" +'%H hours %M minutes %S seconds').
         	
 		# Delete the copied then renamed pdf
 		#-------------------------------------
