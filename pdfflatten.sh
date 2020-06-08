@@ -34,37 +34,45 @@ fi
 if [ $# -eq 0 ]; then
     echo -e "${CYAN}Namaste, Please provide the pdf file!${NONE}"	
     echo -e "${RED}No pdf file provided!${NONE}"
-    echo "For help: ./pdflatten -h"
+    echo "For help: ./pdflatten.sh -h"
     exit 1
 fi
 
 for var in "$@"
 do
-	# Abort the program if pdf with spaces provided!
-	# Because pdf2ps and ps2pdf in Ghostscript cannot handle
-	# todo(done): Work with cp and rm
-	#----------------------------------------------------------
-
-	#if [[ "$var" =~ ( |\') ]]; then
-	#    echo -e "${RED}File name should not have spaces!${NONE}"
-	#    echo "Namaste, Please rename the file and provide to me!"
-	#    exit 1 
-	#fi
-
-	$(cp "$var" "${var// /_}_renamed.pdf") 
-
-	# The real things happen from below
-	#------------------------------------
-
 	echo "Flattening the pdf:" $var"."
 
-	start=`date +%s`
-	pdf2ps ${var// /_}_renamed.pdf - | ps2pdf - ${var// /_}_Flattened.pdf
-	end=`date +%s`
+	if [[ "$var" =~ ( |\') ]]; 
+	then	
+		# If pdf with spaces provided, copy it by renaming.
+		# Because pdf2ps and ps2pdf in Ghostscript cannot handle
+		#--------------------------------------------------------
+		$(cp "$var" "${var// /_}_renamed.pdf") 
 
-	echo "Time taken to finish flattening:" $((end-start)) "seconds."
+		# The real things happen from below
+		#------------------------------------
 
-	$(rm "${var// /_}_renamed.pdf")
+		start=`date +%s`
+		pdf2ps ${var// /_}_renamed.pdf - | ps2pdf - ${var// /_}_Flattened.pdf
+		end=`date +%s`
+
+		echo "Time taken to finish flattening:" $((end-start)) "seconds."
+        	
+		# Delete the copied then renamed pdf
+		#-------------------------------------
+		$(rm "${var// /_}_renamed.pdf")
+
+	else
+		# The real things happen from below
+		#------------------------------------
+
+		start=`date +%s`
+		pdf2ps ${var} - | ps2pdf - ${var}_Flattened.pdf
+		end=`date +%s`
+
+		echo "Time taken to finish flattening:" $(date -ud "@$((end-start))" +'%H hours %M minutes %S seconds').
+	
+	fi
 done
 
 echo "Finished flattening the given pdf(s)!"
