@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Author: Damodar Rajbhandari (2020)
+# Email: dphysicslog@gmail.com
 #--------------------------------------
 
 # Defining Shells coloring
